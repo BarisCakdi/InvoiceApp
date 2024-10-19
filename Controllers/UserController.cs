@@ -11,29 +11,54 @@ namespace InvoiceApp.Controllers
     {
         private readonly AppDbContext _context;
 
-        public UserController(AppDbContext context) 
+        public UserController(AppDbContext context)
         {
-            _context = context; 
+            _context = context;
         }
+
         [HttpGet]
-        public List<User> GetUsers()
+        public IActionResult GetUsers()
         {
-            return _context.Users.ToList();
+            var users = _context.Users.ToList();
+            return Ok(users);  
         }
 
         [HttpPost]
-        public User SaveUser([FromBody] User model)
+        public IActionResult SaveClient([FromBody] User model)
         {
-            if (model != null)
+            if (model == null)
             {
-                _context.Users.Update(model);
+                return BadRequest("Geçersiz kullanıcı bilgisi gönderildi.");
             }
-            else
+
+            if (ModelState.IsValid)  
             {
-                _context.Users.Add(model);
+                if (model.Id == 0)
+                {
+                    _context.Users.Add(model);
+                    _context.SaveChanges();
+                    return Ok(new { message = "Kullanıcı başarıyla eklendi." }); 
+                }
             }
-            _context.SaveChanges();
-            return model;
+
+            return BadRequest(new { message = "Geçersiz girişler mevcut."});  
+        }
+        [HttpDelete("{id}")]
+        public string DeleteClient(int id)
+        {
+            try
+            {
+                var client = _context.Users.Find(id);
+                _context.Users.Remove(client);
+                _context.SaveChanges();
+
+                return "Silindi";
+            }
+            catch (Exception e)
+            {
+                return "Silinemedi." + e.Message;
+            }
         }
     }
+
 }
