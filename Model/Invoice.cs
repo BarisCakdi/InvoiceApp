@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace InvoiceApp.Model;
 
 public enum PaymentStatus
@@ -10,23 +13,24 @@ public enum PaymentStatus
 
 public class Invoice
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-    public string InvoceName { get; set; }
+    public string InvoiceName { get; set; }
 
     public string Description { get; set; }
 
     public DateTime CreatedTime { get; set; }
 
-    public int Amount { get; set; }
+    [ForeignKey("User")]
+    public int UserId { get; set; }
 
-    public int Total { get; set; }
-
-    public int Quantity { get; set; }
+    public User User { get; set; }
 
     public PaymentStatus PaymentStatus { get; set; }
-    
-    public User User { get; set; }
-    
+
+    // Bir faturanın birden fazla Item'ı olabilir
+    public List<Item> Items { get; set; }
     
 }

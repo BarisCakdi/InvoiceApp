@@ -8,14 +8,22 @@ namespace InvoiceApp.Model
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+    
         [Required]
         public string Name { get; set; }
-        public string Email { get; set; }
-        public string Address { get; set; }
-        public string City { get; set; }
-        public int PostCode { get; set; }
-        public string Country { get; set; }
-        public List<Invoice> Invoices { get; set; }
 
+        public string Email { get; set; }
+
+        public string Address { get; set; }
+
+        public string City { get; set; }
+
+        public int PostCode { get; set; }
+
+        public string Country { get; set; }
+    
+        // Bir kullanıcının birden fazla faturası olabilir (One-to-Many ilişki)
+        public List<Invoice> Invoices { get; set; }
     }
+
 }
