@@ -10,7 +10,6 @@ public enum PaymentStatus
     Draft = 3
 }
 
-
 public class Invoice
 {
     [Key]

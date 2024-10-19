@@ -20,16 +20,13 @@ public class InvoiceController : Controller
         return ınvoice;
     }
 
-    // [HttpGet]
-    // [Route("[id]")]
-    // yukarıdaki iki satır yerine bunları birleştirip tek satırda yazabiliyoruz.
     [HttpGet("{id}")]
     public Invoice GetInvoice(int id)
     {
         var lesson = _context.Invoices.Find(id);
         if (lesson is null) 
-            return new Invoice(); // NotFound()
-        return lesson; // Ok(lesson)
+            return new Invoice(); 
+        return lesson; 
     }
 
     [HttpPost]
@@ -67,7 +64,7 @@ public class InvoiceController : Controller
         }
         catch (Exception e)
         {
-            return  "Silme işlemi sırıasın bir hata oluştu.\n" + e.Message;
+            return  "Silme işlemi sırıasın bir hata oluştu." + e.Message;
         }
         
         
