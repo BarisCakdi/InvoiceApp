@@ -22,7 +22,6 @@ namespace InvoiceApp.Model
 
         public string Country { get; set; }
     
-        // Bir kullanıcının birden fazla faturası olabilir (One-to-Many ilişki)
         public List<Invoice> Invoices { get; set; }
     }
 
