@@ -3,6 +3,7 @@ using InvoiceApp.DTOs;
 using InvoiceApp.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using InvoiceApp.DTOs;
 
 namespace InvoiceApp.Controllers
 {
@@ -24,19 +25,24 @@ namespace InvoiceApp.Controllers
             return Ok(users);  
         }
 
-
-        [HttpGet("User/{id}")]
-        public IActionResult GetUser(int id)
+        [HttpPost]
+        public IActionResult SaveClient([FromBody]dtoSaveClientRequest model)
         {
-            var client = _context.Users.FirstOrDefault(x => x.Id == id);
-
-            if (client == null)
+            var data = new User();
+            if (data == null)
             {
                 return BadRequest("Kullanıcı bulunamadı");
             }
 
-            return Ok(client);
-        }
+            if (ModelState.IsValid)  
+            {
+                if (data.Id == 0)
+                {
+                    _context.Users.Add(data);
+                    _context.SaveChanges();
+                    return Ok(new { message = "Kullanıcı başarıyla eklendi." }); 
+                }
+            }
 
 
 

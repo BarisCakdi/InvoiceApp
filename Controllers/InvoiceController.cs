@@ -1,4 +1,5 @@
 using InvoiceApp.Data;
+using InvoiceApp.DTOs;
 using InvoiceApp.Model;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,23 +32,26 @@ namespace InvoiceApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult SaveInvoice([FromBody] Invoice model)
+        public IActionResult SaveInvoice([FromBody]dtoSaveInvoiceRequest model)
         {
+            var data = new Invoice();
 
-            _context.Invoices.Add(model);
+            _context.Invoices.Add(data);
             _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetInvoice), new { id = model.Id }, model);
+            return CreatedAtAction(nameof(GetInvoice), new { id = data.Id }, model);
 
         }
         [HttpPost]
-        public IActionResult UpdateInvoice([FromBody] Invoice model)
+        public IActionResult UpdateInvoice([FromBody] dtoUpdateInvoiceRequest model)
         {
-            model = _context.Invoices.Find(model.Id);
-            model.InvoiceName = model.InvoiceName;
-            model.Description = model.Description;
-            model.PaymentStatus = model.PaymentStatus;
-            model.User = model.User;
-            _context.Invoices.Update(model);
+            var data = new Invoice();
+            
+            data = _context.Invoices.Find(data.Id);
+            data.InvoiceName = data.InvoiceName;
+            data.Description = data.Description;
+            data.PaymentStatus = data.PaymentStatus;
+            data.User = data.User;
+            _context.Invoices.Update(data);
             _context.SaveChangesAsync();
             return Ok("Başarılıyla kaydedildi.");
 
