@@ -25,12 +25,43 @@ public class ItemController : Controller
     [HttpPost]
     public IActionResult ItemAdd([FromBody] Item model)
     {
-        if(model == null)
+        var data = new Item(); 
+        model.Total = model.Quantity * model.Price;
+        if (model.Id is not 0)
         {
-            return BadRequest("Eksik bilgi girişi!");
+            data = _context.Items.Find(model.Id);
+            data.Name = model.Name;
+            data.Quantity = model.Quantity;
+            data.Price = model.Price;
+            _context.Update(data);
+           
         }
-        _context.Items.Add(model);
+        else
+        { 
+            data.Name = model.Name;
+            data.Quantity = model.Quantity;
+            data.Price = data.Price;
+            _context.Add(data);
+        }
         _context.SaveChanges();
-        return Ok(new { message = "Başarıyla eklendi" });
+        return Ok("Eklendi.");
+    }
+    
+    [HttpDelete("{id}")]
+    public string DeleteItem(int id)
+    {
+        try
+        {
+            var data = _context.Items.Find(id);
+            _context.Remove(data);
+            _context.SaveChanges();
+            return "Başarıyla silindi";
+        }
+        catch (Exception e)
+        {
+            return  "Silme işlemi sırıasın bir hata oluştu.\n" + e.Message;
+        }
+        
+        
     }
 }
