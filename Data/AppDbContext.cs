@@ -1,5 +1,6 @@
 ﻿using InvoiceApp.Model;
 using Microsoft.EntityFrameworkCore;
+using static System.Collections.Specialized.BitVector32;
 
 namespace InvoiceApp.Data;
 
@@ -13,4 +14,5 @@ public class AppDbContext : DbContext
     {
         
     }
+
 }
