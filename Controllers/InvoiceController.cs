@@ -37,7 +37,7 @@ namespace InvoiceApp.Controllers
             var data = new Invoice();
 
             _context.Invoices.Add(data);
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
             return CreatedAtAction(nameof(GetInvoice), new { id = data.Id }, model);
 
         }
@@ -52,7 +52,7 @@ namespace InvoiceApp.Controllers
             data.PaymentStatus = data.PaymentStatus;
             data.User = data.User;
             _context.Invoices.Update(data);
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
             return Ok("Başarılıyla kaydedildi.");
 
         }
