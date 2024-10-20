@@ -21,15 +21,15 @@ public class Invoice
     public string Description { get; set; }
 
     public DateTime CreatedTime { get; set; }
-
-    [ForeignKey("User")]
-    public int UserId { get; set; }
-
-    public User User { get; set; }
+    
+    public ICollection<Item> Items { get; set; } 
 
     public PaymentStatus PaymentStatus { get; set; }
 
     // Bir faturanın birden fazla Item'ı olabilir
-    public List<Item> Items { get; set; }
+   
+    
+    public int UserId { get; set; }
+    public User? User { get; set; }
     
 }

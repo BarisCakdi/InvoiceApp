@@ -14,5 +14,22 @@ public class AppDbContext : DbContext
     {
         
     }
-
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Item>()
+            .HasOne(i => i.Invoice)
+            .WithMany(a => a.Items)
+            .HasForeignKey(i => i.InvoiceId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Invoice>() 
+            .HasOne(a => a.User)
+            .WithMany(s => s.Invoices)
+            .HasForeignKey(a => a.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        
+        
+    }
 }

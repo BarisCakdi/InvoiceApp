@@ -21,8 +21,10 @@ namespace InvoiceApp.Model
         public int PostCode { get; set; }
 
         public string Country { get; set; }
-    
-        public List<Invoice> Invoices { get; set; }
+        
+        public int InvoiceId { get; set; }
+        
+        public ICollection<Invoice>? Invoices { get; set; } = new List<Invoice>();
     }
 
 }
