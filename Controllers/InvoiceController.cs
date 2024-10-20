@@ -41,12 +41,12 @@ namespace InvoiceApp.Controllers
             return CreatedAtAction(nameof(GetInvoice), new { id = data.Id }, model);
 
         }
-        [HttpPost]
+        [HttpPut]
         public IActionResult UpdateInvoice([FromBody] dtoUpdateInvoiceRequest model)
         {
             var data = new Invoice();
             
-            data = _context.Invoices.Find(data.Id);
+            data = _context.Invoices.Find(model.Id);
             data.InvoiceName = data.InvoiceName;
             data.Description = data.Description;
             data.PaymentStatus = data.PaymentStatus;

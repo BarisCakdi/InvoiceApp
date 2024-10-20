@@ -29,7 +29,7 @@ namespace InvoiceApp.Controllers
         public IActionResult SaveClient([FromBody] dtoSaveClientRequest model)
         {
             var data = new User();
-            if (data == null)
+            if (model == null)
             {
                 return BadRequest("Kullanıcı bulunamadı");
             }
@@ -44,6 +44,22 @@ namespace InvoiceApp.Controllers
                 }
             }
             return BadRequest(new {message = "Geçersiz girişler mevcut"});
+        }
+        public IActionResult UpdateClient([FromBody] dtoUpdateClientRequest model)
+        {
+            var data = new User();
+            
+            data = _context.Users.Find(model.Id);
+            data.Name = data.Name;
+            data.Address = data.Address;
+            data.City = data.City;
+            data.Country = data.Country;
+            data.Email = data.Email;
+            data.PostCode = data.PostCode;
+            _context.Users.Update(data);
+            _context.SaveChanges();
+            return Ok("Başarılıyla kaydedildi.");
+
         }
 
         [HttpDelete("{id}")]

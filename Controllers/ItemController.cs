@@ -28,7 +28,7 @@ public class ItemController : ControllerBase
     {
         var data = new Item(); 
         data.Total = data.Quantity * data.Price;
-        if (data.Id is not 0)
+        if (model.Id is not 0)
         {
             data = _context.Items.Find(data.Id);
             data.Name = data.Name;
