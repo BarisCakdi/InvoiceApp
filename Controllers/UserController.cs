@@ -1,4 +1,5 @@
 ﻿using InvoiceApp.Data;
+using InvoiceApp.DTOs;
 using InvoiceApp.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -23,26 +24,6 @@ namespace InvoiceApp.Controllers
             return Ok(users);  
         }
 
-        [HttpPost]
-        public IActionResult SaveClient([FromBody] User model)
-        {
-            if (model == null)
-            {
-                return BadRequest("Geçersiz kullanıcı bilgisi gönderildi.");
-            }
-
-            if (ModelState.IsValid)  
-            {
-                if (model.Id == 0)
-                {
-                    _context.Users.Add(model);
-                    _context.SaveChanges();
-                    return Ok(new { message = "Kullanıcı başarıyla eklendi." }); 
-                }
-            }
-
-            return BadRequest(new { message = "Geçersiz girişler mevcut."});  
-        }
 
         [HttpGet("User/{id}")]
         public IActionResult GetUser(int id)
