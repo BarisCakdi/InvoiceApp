@@ -17,8 +17,10 @@ public class Item
 
     public int Total { get; set; }
 
-    [ForeignKey("Invoice")]
     public int InvoiceId { get; set; }
-
+    
+    [ForeignKey("InvoiceId")]
     public Invoice Invoice { get; set; }
+    
+
 }
