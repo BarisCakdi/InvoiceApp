@@ -2,6 +2,7 @@
 using InvoiceApp.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using InvoiceApp.DTOs;
 
 namespace InvoiceApp.Controllers
 {
@@ -24,18 +25,19 @@ namespace InvoiceApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult SaveClient([FromBody] User model)
+        public IActionResult SaveClient([FromBody]dtoSaveClientRequest model)
         {
-            if (model == null)
+            var data = new User();
+            if (data == null)
             {
                 return BadRequest("Geçersiz kullanıcı bilgisi gönderildi.");
             }
 
             if (ModelState.IsValid)  
             {
-                if (model.Id == 0)
+                if (data.Id == 0)
                 {
-                    _context.Users.Add(model);
+                    _context.Users.Add(data);
                     _context.SaveChanges();
                     return Ok(new { message = "Kullanıcı başarıyla eklendi." }); 
                 }
