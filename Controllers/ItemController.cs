@@ -1,4 +1,4 @@
-using InvoiceApp.Data;
+﻿using InvoiceApp.Data;
 using InvoiceApp.Model;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,5 +20,17 @@ public class ItemController : Controller
     public List<Item> GetPrograms()
     {
         return _context.Items.ToList();
+    }
+
+    [HttpPost]
+    public IActionResult ItemAdd([FromBody] Item model)
+    {
+        if(model == null)
+        {
+            return BadRequest("Eksik bilgi girişi!");
+        }
+        _context.Items.Add(model);
+        _context.SaveChanges();
+        return Ok(new { message = "Başarıyla eklendi" });
     }
 }
