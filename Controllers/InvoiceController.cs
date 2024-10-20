@@ -70,5 +70,11 @@ namespace InvoiceApp.Controllers
             }
 
         }
+
+        //[HttpPost]
+        //public IActionResult MailPost()
+        //{
+
+        //}
     }
 }

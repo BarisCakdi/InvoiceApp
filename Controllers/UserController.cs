@@ -43,6 +43,22 @@ namespace InvoiceApp.Controllers
 
             return BadRequest(new { message = "Geçersiz girişler mevcut."});  
         }
+
+        [HttpGet("User/{id}")]
+        public IActionResult GetUser(int id)
+        {
+            var client = _context.Users.FirstOrDefault(x => x.Id == id);
+
+            if (client == null)
+            {
+                return BadRequest("Kullanıcı bulunamadı");
+            }
+
+            return Ok(client);
+        }
+
+
+
         [HttpDelete("{id}")]
         public string DeleteClient(int id)
         {
