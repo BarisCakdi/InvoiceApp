@@ -23,7 +23,7 @@ namespace InvoiceApp.Controllers
             
             var invoices = _context.Invoices
                                    .Include(i => i.Items)
-                                   .Include(i => i.User)
+                                   .Include(i => i.Client)
                                    .ToList();
 
             if (invoices == null || invoices.Count == 0)
@@ -37,7 +37,7 @@ namespace InvoiceApp.Controllers
                 TotalSales = invoices.Sum(inv => inv.Items.Sum(item => item.Total)),
                 TotalInvoices = invoices.Count,
                 TotalItemsSold = invoices.Sum(inv => inv.Items.Sum(item => item.Quantity)),
-                UserReports = invoices.GroupBy(inv => inv.User)
+                UserReports = invoices.GroupBy(inv => inv.Client)
                                       .Select(grp => new
                                       {
                                           UserName = grp.Key.Name,

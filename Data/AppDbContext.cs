@@ -6,7 +6,7 @@ namespace InvoiceApp.Data;
 
 public class AppDbContext : DbContext
 {
-    public DbSet<User> Users { get; set; }
+    public DbSet<Client> Clients { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
     
     public DbSet<Item> Items { get; set; }
@@ -24,9 +24,9 @@ public class AppDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<Invoice>() 
-            .HasOne(a => a.User)
+            .HasOne(a => a.Client)
             .WithMany(s => s.Invoices)
-            .HasForeignKey(a => a.UserId)
+            .HasForeignKey(a => a.ClientId)
             .OnDelete(DeleteBehavior.Cascade);
         
         

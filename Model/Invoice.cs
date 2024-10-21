@@ -29,7 +29,7 @@ public class Invoice
     // Bir faturanın birden fazla Item'ı olabilir
    
     
-    public int UserId { get; set; }
-    public User? User { get; set; }
+    public int ClientId { get; set; }
+    public Client? Client { get; set; }
     
 }

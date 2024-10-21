@@ -50,7 +50,7 @@ namespace InvoiceApp.Controllers
             data.InvoiceName = data.InvoiceName;
             data.Description = data.Description;
             data.PaymentStatus = data.PaymentStatus;
-            data.User = data.User;
+            data.Client = data.Client;
             _context.Invoices.Update(data);
             _context.SaveChanges();
             return Ok("Başarılıyla kaydedildi.");

@@ -10,19 +10,19 @@ namespace InvoiceApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public class UserController : ControllerBase
+    public class ClientController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public UserController(AppDbContext context)
+        public ClientController(AppDbContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public IActionResult GetUsers()
+        public IActionResult GetClients()
         {
-            var users = _context.Users.ToList();
+            var users = _context.Clients.ToList();
             return Ok(users);  
         }
 
@@ -36,7 +36,7 @@ namespace InvoiceApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var data = new User
+                var data = new Client
                 {
                     Name = model.Name,
                     Email = model.Email,
@@ -48,7 +48,7 @@ namespace InvoiceApp.Controllers
 
                 if (data.Id == 0)
                 {
-                    _context.Users.Add(data);
+                    _context.Clients.Add(data);
                     _context.SaveChanges();
                     return Ok(new { message = "Kullanıcı başarıyla eklendi." });
                 }
@@ -59,7 +59,7 @@ namespace InvoiceApp.Controllers
         [HttpGet("{id}")]
         public IActionResult GetUserById(int id)
         {
-            var user = _context.Users
+            var user = _context.Clients
                 .Include(u => u.Invoices) // Kullanıcının faturalarını içeri aktar
                 .FirstOrDefault(u => u.Id == id);
 
@@ -100,7 +100,7 @@ namespace InvoiceApp.Controllers
                 return BadRequest("Geçersiz kullanıcı bilgileri.");
             }
 
-            var data = _context.Users.Find(model.Id);
+            var data = _context.Clients.Find(model.Id);
             if (data == null)
             {
                 return NotFound("Kullanıcı bulunamadı.");
@@ -115,7 +115,7 @@ namespace InvoiceApp.Controllers
                 data.PostCode = model.PostCode;
                 data.Country = model.Country;
 
-                _context.Users.Update(data);
+                _context.Clients.Update(data);
                 _context.SaveChanges();
                 return Ok("Kullanıcı başarıyla güncellendi.");
             }
@@ -129,8 +129,8 @@ namespace InvoiceApp.Controllers
         {
             try
             {
-                var client = _context.Users.Find(id);
-                _context.Users.Remove(client);
+                var client = _context.Clients.Find(id);
+                _context.Clients.Remove(client);
                 _context.SaveChanges();
 
                 return "Silindi";
