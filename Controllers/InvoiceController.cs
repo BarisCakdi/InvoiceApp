@@ -18,8 +18,8 @@ namespace InvoiceApp.Controllers
         [HttpGet]
         public IActionResult GetInvoices()
         {
-            var ınvoice = _context.Invoices.ToList();
-            return Ok(ınvoice);
+            var invoices = _context.Invoices.ToList();
+            return Ok(invoices);
         }
 
         [HttpGet("{id}")]
