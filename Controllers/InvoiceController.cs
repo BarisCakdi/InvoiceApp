@@ -44,9 +44,9 @@ namespace InvoiceApp.Controllers
         [HttpPut]
         public IActionResult UpdateInvoice([FromBody] dtoUpdateInvoiceRequest model)
         {
-            var data = new Invoice();
             
-            data = _context.Invoices.Find(model.Id);
+            
+           var data = _context.Invoices.Find(model.Id);
             data.InvoiceName = data.InvoiceName;
             data.Description = data.Description;
             data.PaymentStatus = data.PaymentStatus;
