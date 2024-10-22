@@ -31,26 +31,25 @@ public class Invoice
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-        [Required]
-        public string InvoiceName { get; set; }
+    [Required] public string InvoiceName { get; set; }
 
-        public string? Description { get; set; }
+    public string? Description { get; set; }
 
     public DateTime CreatedTime { get; set; }
-    
+
     public ICollection<Item> Items { get; set; }
     public DateTime PaymentDue { get; set; }
 
     public Double TotalAmount { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
-    
-    
+
+
 
 
     // Bir faturanın birden fazla Item'ı olabilir
-     
-    
-     public int ClientId { get; set; }
+
+
+    public int ClientId { get; set; }
     public Client? Client { get; set; }
-    
+}
 }
