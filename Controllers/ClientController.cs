@@ -33,7 +33,8 @@ namespace InvoiceApp.Controllers
             {
                 return BadRequest(new { message = "Eksik veya hatalı giriş yaptınız." });
             }
-           
+            
+            //denemecanlı
             var data = new Client();
 
             if (model.Id is not 0)
