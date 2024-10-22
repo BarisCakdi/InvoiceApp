@@ -15,7 +15,7 @@ public class CompanyController : ControllerBase
     {
         _context = context;
     }
-    
+    //denemecanlı2
     [HttpGet]
     public IActionResult GetCompanys()
     {
