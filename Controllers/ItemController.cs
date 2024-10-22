@@ -23,32 +23,39 @@ public class ItemController : ControllerBase
         return _context.Items.ToList();
     }
 
-    [HttpPost]
-    public IActionResult ItemAdd([FromBody]dtoAddItemRequest model)
+    [HttpPost("/SaveItems")]
+    public IActionResult SaveItems([FromBody] dtoSaveItemRequest model)
     {
-        var data = new Item(); 
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new { message = "Eksik veya hatalı giriş yaptınız." });
+        }
+            
+        var data = new Item();
+            
         data.Total = data.Quantity * data.Price;
+            
         if (model.Id is not 0)
         {
             data = _context.Items.Find(model.Id);
+            data.Name = model.Name;
+            data.Price = model.Price;
             data.InvoiceId = model.Id;
-            data.Name = data.Name;
-            data.Quantity = data.Quantity;
-            data.Price = data.Price;
-            _context.Update(data);
-           
+            data.Quantity = model.Quantity;
+            _context.Items.Update(data);
         }
         else
-        { 
-            data.Name = data.Name;
-            data.Quantity = data.Quantity;
-            data.Price = data.Price;
-            _context.Add(data);
+        {
+            data.Name = model.Name;
+            data.Price = model.Price;
+            data.Quantity = model.Quantity;
+            _context.Items.Add(data);
         }
+
         _context.SaveChanges();
-        return Ok("Eklendi.");
+
+        return Ok("Ürün başarıyla eklendi.");
     }
-    
     [HttpDelete("{id}")]
     public string DeleteItem(int id)
     {

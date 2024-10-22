@@ -26,41 +26,51 @@ namespace InvoiceApp.Controllers
             return Ok(users);  
         }
 
-        [HttpPost]
-        public IActionResult SaveClient([FromBody] dtoSaveClientRequest model)
+        [HttpPost("/SaveClient")]
+        public IActionResult SaveClient(dtoSaveClientRequest model)
         {
-            if (model == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Kullanıcı bulunamadı");
+                return BadRequest(new { message = "Eksik veya hatalı giriş yaptınız." });
+            }
+           
+            var data = new Client();
+
+            if (model.Id is not 0)
+            {
+                data = _context.Clients.Find(model.Id);
+                data.Name = model.Name;
+                data.Email = model.Email;
+                data.Address = model.Address;
+                data.City = model.City;
+                data.PostCode = model.PostCode;
+                data.Country = model.Country;
+                _context.Clients.Update(data);
+            }
+            else
+            {
+                data.Name = model.Name;
+                data.Email = model.Email;
+                data.Address = model.Address;
+                data.City = model.City;
+                data.PostCode = model.PostCode;
+                data.Country = model.Country;
+                
+                _context.Clients.Add(data);
             }
 
-            if (ModelState.IsValid)
-            {
-                var data = new Client
-                {
-                    Name = model.Name,
-                    Email = model.Email,
-                    Address = model.Address,
-                    City = model.City,
-                    PostCode = model.PostCode,
-                    Country = model.Country
-                };
+            _context.SaveChanges();
 
-                if (data.Id == 0)
-                {
-                    _context.Clients.Add(data);
-                    _context.SaveChanges();
-                    return Ok(new { message = "Kullanıcı başarıyla eklendi." });
-                }
-            }
-            return BadRequest(new { message = "Geçersiz girişler mevcut" });
+            return Ok("Müşteri Başarıyla eklendi.");
         }
+        
 
         [HttpGet("{id}")]
         public IActionResult GetUserById(int id)
         {
             var user = _context.Clients
-                .Include(u => u.Invoices) // Kullanıcının faturalarını içeri aktar
+                .Include(u => u.Invoices)!     // Kullanıcının faturalarını içeri aktar
+                .ThenInclude(d => d.Items)
                 .FirstOrDefault(u => u.Id == id);
 
             if (user == null)
@@ -90,38 +100,7 @@ namespace InvoiceApp.Controllers
             return Ok(userWithInvoices);
         }
 
-
-
-        [HttpPut]
-        public IActionResult UpdateClient([FromBody] dtoUpdateClientRequest model)
-        {
-            if (model == null || model.Id == 0)
-            {
-                return BadRequest("Geçersiz kullanıcı bilgileri.");
-            }
-
-            var data = _context.Clients.Find(model.Id);
-            if (data == null)
-            {
-                return NotFound("Kullanıcı bulunamadı.");
-            }
-
-            if (ModelState.IsValid)
-            {
-                data.Name = model.Name;
-                data.Email = model.Email;
-                data.Address = model.Address;
-                data.City = model.City;
-                data.PostCode = model.PostCode;
-                data.Country = model.Country;
-
-                _context.Clients.Update(data);
-                _context.SaveChanges();
-                return Ok("Kullanıcı başarıyla güncellendi.");
-            }
-
-            return BadRequest("Geçersiz girişler mevcut.");
-        }
+        
 
 
         [HttpDelete("{id}")]

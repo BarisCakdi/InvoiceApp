@@ -15,10 +15,9 @@ namespace InvoiceApp.Model
         [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
 
-        [Range(0, double.MaxValue)]
-        public double Price { get; set; }
+    public Double Price { get; set; }
 
-        public double Total {  get; set; }
+    public Double Total { get; set; }
 
         public int InvoiceId { get; set; }
 

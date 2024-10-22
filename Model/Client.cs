@@ -26,4 +26,7 @@ namespace InvoiceApp.Model
         // Lazy Loading için 'virtual' eklenebilir
         public virtual ICollection<Invoice>? Invoices { get; set; } = new List<Invoice>();
     }
+
+    
+
 }
