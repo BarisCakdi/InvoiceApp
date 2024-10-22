@@ -13,9 +13,9 @@ public class Item
 
     public int Quantity { get; set; }
 
-    public int Price { get; set; }
+    public Double Price { get; set; }
 
-    public int Total { get; set; }
+    public Double Total { get; set; }
 
     public int InvoiceId { get; set; }
     

@@ -10,6 +10,21 @@ public enum PaymentStatus
     Draft = 3
 }
 
+public enum PaymentTerm
+{
+    ErtesiGün,
+    Sonraki7Gün,
+    Sonraki14Gün,
+    Sonraki30Gün
+}
+
+public enum Status
+{
+    Beklemede,
+    Ödendi,
+    Taslak
+}
+
 public class Invoice
 {
     [Key]
@@ -22,14 +37,19 @@ public class Invoice
 
     public DateTime CreatedTime { get; set; }
     
-    public ICollection<Item> Items { get; set; } 
+    public ICollection<Item> Items { get; set; }
+    public DateTime PaymentDue { get; set; }
 
+    public Double TotalAmount { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
+    
+    
+
 
     // Bir faturanın birden fazla Item'ı olabilir
-   
+     
     
-    public int ClientId { get; set; }
+     public int ClientId { get; set; }
     public Client? Client { get; set; }
     
 }

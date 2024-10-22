@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InvoiceApp.DTOs;
 
-public class dtoAddItemRequest
+public class dtoSaveItemRequest
 {
     public int Id { get; set; }
 
@@ -13,6 +13,6 @@ public class dtoAddItemRequest
 
     public int Price { get; set; }
 
-    public int Total { get; set; }
+   
 
 }

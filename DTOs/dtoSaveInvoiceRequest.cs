@@ -7,12 +7,16 @@ public class dtoSaveInvoiceRequest
 {
     public int Id { get; set; }
 
-    public string Name { get; set; }
+    public string InvoiceName { get; set; }
 
-    public int Quantity { get; set; }
+    public string Description { get; set; }
 
-    public int Price { get; set; }
+    public DateTime CreatedTime { get; set; }
+    public ICollection<dtoSaveItemRequest> Items { get; set; } 
 
-    public int Total { get; set; }
-
+    public PaymentStatus PaymentStatus { get; set; }
+    
+    public int ClientId { get; set; }
+  
+    public PaymentTerm PaymentTerm { get; set; }
 }

@@ -2,6 +2,7 @@ using InvoiceApp.Data;
 using InvoiceApp.DTOs;
 using InvoiceApp.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace InvoiceApp.Controllers
 {
@@ -11,74 +12,265 @@ namespace InvoiceApp.Controllers
     public class InvoiceController : ControllerBase
     {
         private readonly AppDbContext _context;
+
         public InvoiceController(AppDbContext context)
         {
             _context = context;
         }
-        [HttpGet]
-        public IActionResult GetInvoices()
+
+        [HttpGet("/Invoices")]
+        public IActionResult GetInvoice()
         {
-            var invoices = _context.Invoices.ToList();
-            return Ok(invoices);
+            var invoices = _context.Invoices
+                .Include(x => x.Client)
+                .Include(x => x.Items)
+                .ToList();
+
+            var invoiceDetail = invoices.Select(invoice => new Invoice
+            {
+                Id = invoice.Id,
+                InvoiceName = invoice.InvoiceName,
+                CreatedTime = invoice.CreatedTime,
+                PaymentStatus = invoice.PaymentStatus,
+                ClientId = invoice.ClientId,
+                Client = new Client
+                {
+                    Id = invoice.Client.Id,
+                    Name = invoice.Client.Name,
+                    Email = invoice.Client.Email,
+                    Address = invoice.Client.Address,
+                    PostCode = invoice.Client.PostCode,
+                    City = invoice.Client.City,
+                    Country = invoice.Client.Country,
+                },
+                Items = invoice.Items.Select(item => new Item
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Quantity = item.Quantity,
+                    Price = item.Price,
+                    Total = item.Quantity * item.Price,
+                }).ToList(),
+                TotalAmount = invoice.Items.Sum(x => x.Quantity * x.Price),
+            }).ToList();
+
+            return Ok(invoiceDetail);
         }
 
-        [HttpGet("{id}")]
-        public Invoice GetInvoice(int id)
+        [HttpPost("/InvoiceDetail/{id}")]
+        public IActionResult InvoiceDetail(int id)
         {
-            var lesson = _context.Invoices.Find(id);
-            if (lesson is null)
-                return new Invoice();
-            return lesson;
+            var invoice = _context.Invoices
+                .Include(x => x.Client)
+                .Include(x => x.Items)
+                .FirstOrDefault(x => x.Id == id);
+
+            if (invoice == null)
+            {
+                return NotFound("Fatura bulunamadı.");
+            }
+
+            var invoiceDetail = new Invoice
+            {
+                Id = id,
+                InvoiceName = invoice.InvoiceName,
+                CreatedTime = invoice.CreatedTime,
+                PaymentStatus = invoice.PaymentStatus,
+                ClientId = invoice.ClientId,
+                Client = new Client
+                {
+                    Id = invoice.Client.Id,
+                    Name = invoice.Client.Name,
+                    Email = invoice.Client.Email,
+                    Address = invoice.Client.Address,
+                    PostCode = invoice.Client.PostCode,
+                    City = invoice.Client.City,
+                    Country = invoice.Client.Country,
+                },
+                Items = invoice.Items.Select(x => new Item
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Quantity = x.Quantity,
+                    Price = x.Price,
+                    Total = x.Quantity * x.Price,
+                }).ToList(),
+                TotalAmount = invoice.Items.Sum(x => x.Quantity * x.Price),
+            };
+
+            return Ok(invoiceDetail);
         }
 
         [HttpPost]
-        public IActionResult SaveInvoice([FromBody]dtoSaveInvoiceRequest model)
+        public IActionResult SaveInvoice([FromBody] dtoSaveInvoiceRequest model)
         {
-            var data = new Invoice();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { message = "Eksik veya hatalı giriş yaptınız." });
+            }
 
-            _context.Invoices.Add(data);
-            _context.SaveChanges();
-            return CreatedAtAction(nameof(GetInvoice), new { id = data.Id }, model);
+            if (model.Id is 0)
+            {
+                var Invoice = new Invoice()
+                {
+                    InvoiceName = GenerateInvoiceName(),
+                    CreatedTime = model.CreatedTime,
+                    PaymentStatus = model.PaymentStatus,
+                    Description = model.Description,
+                    ClientId = model.ClientId,
+                    PaymentDue = CalculatePaymentDue(model.CreatedTime, model.PaymentTerm),
+                    Items = model.Items.Select(x => new Item
+                    {
+                        Name = x.Name,
+                        Quantity = x.Quantity,
+                        Price = x.Price,
+                        Total = x.Price * x.Quantity,
+                    }).ToList()
+                };
 
+                _context.Invoices.Add(Invoice);
+                _context.SaveChanges();
+
+                return Ok(new { message = "Fatura başarıyla kaydedildi." });
+            }
+            else
+            {
+                var invoice = _context.Invoices
+                    .Include(x => x.Items)
+                    .FirstOrDefault(x => x.Id == model.Id);
+
+                if (invoice == null)
+                {
+                    return NotFound("Fatura bulunamadı.");
+                }
+
+                invoice.CreatedTime = model.CreatedTime;
+                invoice.PaymentStatus = model.PaymentStatus;
+                invoice.ClientId = model.ClientId;
+                invoice.PaymentDue = CalculatePaymentDue(model.CreatedTime, model.PaymentTerm);
+
+                invoice.Items.Clear();
+
+                invoice.Items = model.Items.Select(x => new Item
+                {
+                    Name = x.Name,
+                    Quantity = x.Quantity,
+                    Price = x.Price,
+                    Total = x.Price * x.Quantity,
+                }).ToList();
+                _context.Invoices.Update(invoice);
+                _context.SaveChanges();
+
+                return Ok(new { message = "Fatura başarıyla güncellendi." });
+            }
         }
-        [HttpPut]
-        public IActionResult UpdateInvoice([FromBody] dtoUpdateInvoiceRequest model)
-        {
-            
-            
-           var data = _context.Invoices.Find(model.Id);
-            data.InvoiceName = data.InvoiceName;
-            data.Description = data.Description;
-            data.PaymentStatus = data.PaymentStatus;
-            data.Client = data.Client;
-            _context.Invoices.Update(data);
-            _context.SaveChanges();
-            return Ok("Başarılıyla kaydedildi.");
-
-        }
-
 
         [HttpDelete("{id}")]
-        public string DeleteInvoice(int id)
+        public IActionResult DeleteInvoice(int id)
         {
-            try
+            var invoice = _context.Invoices.FirstOrDefault(x => x.Id == id);
+
+            if (invoice == null)
             {
-                var data = _context.Invoices.Find(id);
-                _context.Remove(data);
-                _context.SaveChanges();
-                return "Başarıyla silindi";
-            }
-            catch (Exception e)
-            {
-                return "Silme işlemi sırıasın bir hata oluştu." + e.Message;
+                return NotFound("Fatura bulunamadı.");
             }
 
+            _context.Invoices.Remove(invoice);
+            _context.SaveChanges();
+
+            return Ok("Fatura başarıyla silindi.");
         }
 
-        //[HttpPost]
-        //public IActionResult MailPost()
-        //{
+        [HttpGet("/Invoices/Status/{status}")]
+        public IActionResult GetInvoicesByStatus(Status status)
+        {
+            var invoices = _context.Invoices
+                .Include(x => x.Client)
+                .Include(x => x.Items)
+                .Where(x => x.PaymentStatus == (PaymentStatus)status)
+                .ToList();
 
-        //}
+            var invoiceDtos = invoices.Select(invoice => new Invoice
+            {
+                Id = invoice.Id,
+                InvoiceName = invoice.InvoiceName,
+                CreatedTime = invoice.CreatedTime,
+                PaymentStatus = invoice.PaymentStatus,
+                ClientId = invoice.ClientId,
+                Client = new Client
+                {
+                    Id = invoice.Client.Id,
+                    Name = invoice.Client.Name,
+                    Email = invoice.Client.Email,
+                    Address = invoice.Client.Address,
+                    PostCode = invoice.Client.PostCode,
+                    City = invoice.Client.City,
+                    Country = invoice.Client.Country
+                },
+                Items = invoice.Items.Select(item => new Item
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Quantity = item.Quantity,
+                    Price = item.Price,
+                    Total = item.Quantity * item.Price,
+                }).ToList()
+            }).ToList();
+
+            return Ok(invoiceDtos);
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public string GenerateInvoiceName()
+        {
+            Random random = new Random();
+
+            char firstLetter = (char)random.Next('A', 'Z' + 1);
+            char secondLetter = (char)random.Next('A', 'Z' + 1);
+            int number = random.Next(1000, 9999);
+            var invoiceName =
+                _context.Invoices.FirstOrDefault(x => x.InvoiceName == $"#{firstLetter}{secondLetter}{number}");
+            if (invoiceName != null)
+            {
+                char firstLetterAgain = (char)random.Next('A', 'Z' + 1);
+                char secondLetterAgain = (char)random.Next('A', 'Z' + 1);
+                int numberAgain = random.Next(1000, 9999);
+
+                return $"#{firstLetter}{secondLetter}{number}";
+
+            }
+            else
+            {
+                return $"#{firstLetter}{secondLetter}{number}";
+
+            }
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public DateTime CalculatePaymentDue(DateTime createdTime, PaymentTerm paymentTerm)
+        {
+            if (paymentTerm == PaymentTerm.ErtesiGün)
+            {
+                return createdTime.AddDays(1);
+            }
+            else if (paymentTerm == PaymentTerm.Sonraki7Gün)
+            {
+                return createdTime.AddDays(7);
+
+            }
+            else if (paymentTerm == PaymentTerm.Sonraki14Gün)
+            {
+                return createdTime.AddDays(14);
+            }
+            else
+            {
+                return createdTime.AddDays(30);
+            }
+        }
+
+
+
+
+
     }
 }
