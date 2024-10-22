@@ -24,7 +24,7 @@ public class CompanyController : ControllerBase
     }
     
     [HttpPost]
-    public Company SaveCompany([FromBody] dtoSaveCompanyRequest model)
+    public OkObjectResult SaveCompany([FromBody] dtoSaveCompanyRequest model)
     {
         var data = new Company(); 
         if (model.Id is not 0)
@@ -44,7 +44,7 @@ public class CompanyController : ControllerBase
             _context.Companys.Add(data);
         }
         _context.SaveChanges();
-        return _context.Companys.Find(model.Id);
+        return Ok("Company saved");
     }
     
     [HttpDelete("{id}")]

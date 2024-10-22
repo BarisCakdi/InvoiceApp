@@ -1,5 +1,6 @@
 using InvoiceApp.Model;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace InvoiceApp.DTOs;
 
@@ -7,6 +8,7 @@ public class dtoSaveInvoiceRequest
 {
     public int Id { get; set; }
 
+    [JsonIgnore]
     public string InvoiceName { get; set; }
 
     public string Description { get; set; }
