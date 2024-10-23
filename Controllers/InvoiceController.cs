@@ -237,7 +237,7 @@ namespace InvoiceApp.Controllers
             char secondLetter = (char)random.Next('A', 'Z' + 1);
             int number = random.Next(1000, 9999);
             var invoiceName =
-                _context.Invoices.FirstOrDefault(x => x.InvoiceName == $"#{firstLetter}{secondLetter}{number}");
+                _context.Invoices.FirstOrDefault(x => x.InvoiceName == $"{firstLetter}{secondLetter}{number}");
             if (invoiceName != null)
             {
                 char firstLetterAgain = (char)random.Next('A', 'Z' + 1);
