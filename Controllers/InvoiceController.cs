@@ -125,7 +125,8 @@ namespace InvoiceApp.Controllers
                     PaymentStatus = model.PaymentStatus,
                     Description = model.Description,
                     ClientId = model.ClientId,
-                    PaymentDue = CalculatePaymentDue(model.CreatedTime, model.PaymentTerm),
+                    PaymentDue = CalculatePaymentDue(model.CreatedTime, model.PaymentTerm), 
+                    
                     Items = model.Items.Select(x => new Item
                     {
                         Name = x.Name,
