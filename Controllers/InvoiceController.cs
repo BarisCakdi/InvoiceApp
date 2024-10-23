@@ -124,7 +124,7 @@ namespace InvoiceApp.Controllers
                     CreatedTime = model.CreatedTime,
                     PaymentStatus = model.PaymentStatus,
                     Description = model.Description,
-                    // ClientId = model.ClientId,
+                    ClientId = model.ClientId,
                     PaymentDue = CalculatePaymentDue(model.CreatedTime, model.PaymentTerm),
                     Items = model.Items.Select(x => new Item
                     {
@@ -154,7 +154,7 @@ namespace InvoiceApp.Controllers
                 invoice.CreatedTime = model.CreatedTime;
                 invoice.PaymentStatus = model.PaymentStatus;
                 invoice.Description = model.Description;
-                // invoice.ClientId = model.ClientId;
+                invoice.ClientId = model.ClientId;
                 invoice.PaymentDue = model.PaymentDue;
 
                 invoice.Items.Clear();
@@ -244,12 +244,12 @@ namespace InvoiceApp.Controllers
                 char secondLetterAgain = (char)random.Next('A', 'Z' + 1);
                 int numberAgain = random.Next(1000, 9999);
 
-                return $"#{firstLetter}{secondLetter}{number}";
+                return $"{firstLetter}{secondLetter}{number}";
 
             }
             else
             {
-                return $"#{firstLetter}{secondLetter}{number}";
+                return $"{firstLetter}{secondLetter}{number}";
 
             }
         }
