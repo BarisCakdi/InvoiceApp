@@ -8,7 +8,7 @@ public class dtoSaveInvoiceRequest
 {
     public int Id { get; set; }
 
-    [JsonIgnore]
+   
     public string InvoiceName { get; set; }
 
     public string Description { get; set; }
@@ -18,7 +18,8 @@ public class dtoSaveInvoiceRequest
 
     public PaymentStatus PaymentStatus { get; set; }
     
-    public int ClientId { get; set; }
+    // public int ClientId { get; set; }
   
     public PaymentTerm PaymentTerm { get; set; }
+    public DateTime PaymentDue { get; set; }
 }

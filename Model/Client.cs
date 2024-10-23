@@ -27,6 +27,6 @@ namespace InvoiceApp.Model
         public ICollection<Invoice>? Invoices { get; set; } = new List<Invoice>();
     }
 
-    
+  
 
 }
