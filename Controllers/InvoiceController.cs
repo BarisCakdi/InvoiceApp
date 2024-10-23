@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Mail;
 using InvoiceApp.Data;
 using Quartz;
 using InvoiceApp.DTOs;
@@ -140,6 +142,35 @@ namespace InvoiceApp.Controllers
                     }).ToList()
                 };
 
+                if (model.PaymentStatus == PaymentStatus.Pending)
+                {
+                    var client = new SmtpClient("smtp.eu.mailgun.org", 587)
+                    {
+                        Credentials = new NetworkCredential("postmaster@mesaj.denemeinvoice.com.tr",
+                            "86292b638e47e76d91b20ba5c630675c-fe9cf0a8-f63be79c"),
+            
+                        EnableSsl = true    
+                    };
+
+                    var mailMessage = new MailMessage()  //paranteze gerek yok
+                    {
+                        From = new MailAddress("postmaster@mesaj.denemeinvoice.com.tr","Deneme Invoice"), // postmaster yerine istediğimiz olur 
+                        Subject = $"denemeınvoice.com.tr'den mesaj var",
+                        Body = "Faturanız başarıyla oluşturuldu." ,
+                        IsBodyHtml = true
+
+                    };
+        
+        
+                    // mailMessage.To.Add("cimebura@hotmail.com");
+
+                    mailMessage.To.Add(new MailAddress("denememail@gmail.com","Deneme Email"));
+        
+                    client.Send(mailMessage);
+
+                   return Ok(new {message = "Mail Gönderildi"});
+                }
+
                 _context.Invoices.Add(invoice);
                 _context.SaveChanges();
 
@@ -165,14 +196,90 @@ namespace InvoiceApp.Controllers
                 if (model.PaymentStatus == PaymentStatus.Paid)
                 {
                     invoice.PaymentStatus = PaymentStatus.Paid; 
+                    
+                    var client = new SmtpClient("smtp.eu.mailgun.org", 587)
+                    {
+                        Credentials = new NetworkCredential("postmaster@mesaj.denemeinvoice.com.tr",
+                            "86292b638e47e76d91b20ba5c630675c-fe9cf0a8-f63be79c"),
+            
+                        EnableSsl = true    
+                    };
+
+                    var mailMessage = new MailMessage()  //paranteze gerek yok
+                    {
+                        From = new MailAddress("postmaster@mesaj.denemeinvoice.com.tr","Deneme Invoice"), // postmaster yerine istediğimiz olur 
+                        Subject = $"denemeınvoice.com.tr'den mesaj var",
+                        Body = "Faturanız başarıyla ödendi." ,
+                        IsBodyHtml = true
+
+                    };
+        
+        
+                    // mailMessage.To.Add("cimebura@hotmail.com");
+
+                    mailMessage.To.Add(new MailAddress("denememail@gmail.com","Deneme Email"));
+        
+                    client.Send(mailMessage);
+
+                    return Ok(new {message = "Mail Gönderildi"});
                 }
                 else if (DateTime.Now > model.PaymentDue)
                 {
                     invoice.PaymentStatus = PaymentStatus.Draft; 
+                    var client = new SmtpClient("smtp.eu.mailgun.org", 587)
+                    {
+                        Credentials = new NetworkCredential("postmaster@mesaj.denemeinvoice.com.tr",
+                            "86292b638e47e76d91b20ba5c630675c-fe9cf0a8-f63be79c"),
+            
+                        EnableSsl = true    
+                    };
+
+                    var mailMessage = new MailMessage()  //paranteze gerek yok
+                    {
+                        From = new MailAddress("postmaster@mesaj.denemeinvoice.com.tr","Deneme Invoice"), // postmaster yerine istediğimiz olur 
+                        Subject = $"denemeınvoice.com.tr'den mesaj var",
+                        Body = "Faturanız başarıyla ödenmedi." ,
+                        IsBodyHtml = true
+
+                    };
+        
+        
+                    // mailMessage.To.Add("cimebura@hotmail.com");
+
+                    mailMessage.To.Add(new MailAddress("denememail@gmail.com","Deneme Email"));
+        
+                    client.Send(mailMessage);
+
+                    return Ok(new {message = "Mail Gönderildi"});
                 }
                 else
                 {
                     invoice.PaymentStatus = PaymentStatus.Pending; 
+                    var client = new SmtpClient("smtp.eu.mailgun.org", 587)
+                    {
+                        Credentials = new NetworkCredential("postmaster@mesaj.denemeinvoice.com.tr",
+                            "86292b638e47e76d91b20ba5c630675c-fe9cf0a8-f63be79c"),
+            
+                        EnableSsl = true    
+                    };
+
+                    var mailMessage = new MailMessage()  //paranteze gerek yok
+                    {
+                        From = new MailAddress("postmaster@mesaj.denemeinvoice.com.tr","Deneme Invoice"), // postmaster yerine istediğimiz olur 
+                        Subject = $"denemeınvoice.com.tr'den mesaj var",
+                        Body = "Faturanız askıya alındı." ,
+                        IsBodyHtml = true
+
+                    };
+        
+        
+                    // mailMessage.To.Add("cimebura@hotmail.com");
+
+                    mailMessage.To.Add(new MailAddress("denememail@gmail.com","Deneme Email"));
+        
+                    client.Send(mailMessage);
+
+                    // return Ok(new {message = "Mail Gönderildi"});
                 }
 
                 // Item'ları güncelleme
