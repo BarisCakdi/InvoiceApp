@@ -1,4 +1,5 @@
 using InvoiceApp.Data;
+using Quartz;
 using InvoiceApp.DTOs;
 using InvoiceApp.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,9 @@ namespace InvoiceApp.Controllers
         {
             _context = context;
         }
+        
+        
+        
         
         //denemecanlı3
 
@@ -154,7 +158,7 @@ namespace InvoiceApp.Controllers
 
                 invoice.CreatedTime = model.CreatedTime;
                 invoice.Description = model.Description;
-                invoice.ClientId = model.ClientId;
+                // invoice.ClientId = model.ClientId;
                 invoice.PaymentDue = model.PaymentDue;
 
                 // Ödeme durumu güncellemeleri

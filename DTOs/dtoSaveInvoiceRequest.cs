@@ -22,5 +22,5 @@ public class dtoSaveInvoiceRequest
   
     public PaymentTerm PaymentTerm { get; set; }
     public DateTime PaymentDue { get; set; }
-    public int ClientId { get; set; }
+    public int ClientId { get; set; } 
 }
