@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using InvoiceApp.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
+using System.Net;
 
 namespace InvoiceApp.Controllers
 {
@@ -33,8 +35,6 @@ namespace InvoiceApp.Controllers
             {
                 return BadRequest(new { message = "Eksik veya hatalı giriş yaptınız." });
             }
-            
-            //denemecanlı
             var data = new Client();
 
             if (model.Id is not 0)

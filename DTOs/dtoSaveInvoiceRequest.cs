@@ -1,4 +1,4 @@
-using InvoiceApp.Model;
+﻿using InvoiceApp.Model;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
