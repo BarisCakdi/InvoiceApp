@@ -116,13 +116,13 @@ namespace InvoiceApp.Controllers
                 return BadRequest(new { message = "Eksik veya hatalı giriş yaptınız." });
             }
 
-            if (model.Id is 0)
+            if (model.Id == 0)
             {
-                var Invoice = new Invoice()
+                var invoice = new Invoice()
                 {
                     InvoiceName = GenerateInvoiceName(),
                     CreatedTime = model.CreatedTime,
-                    PaymentStatus = model.PaymentStatus,
+                    PaymentStatus = PaymentStatus.Pending,
                     Description = model.Description,
                     ClientId = model.ClientId,
                     PaymentDue = CalculatePaymentDue(model.CreatedTime, model.PaymentTerm), 
@@ -136,7 +136,7 @@ namespace InvoiceApp.Controllers
                     }).ToList()
                 };
 
-                _context.Invoices.Add(Invoice);
+                _context.Invoices.Add(invoice);
                 _context.SaveChanges();
 
                 return Ok(new { message = "Fatura başarıyla kaydedildi." });
@@ -153,13 +153,26 @@ namespace InvoiceApp.Controllers
                 }
 
                 invoice.CreatedTime = model.CreatedTime;
-                invoice.PaymentStatus = model.PaymentStatus;
                 invoice.Description = model.Description;
                 invoice.ClientId = model.ClientId;
                 invoice.PaymentDue = model.PaymentDue;
 
-                invoice.Items.Clear();
+                // Ödeme durumu güncellemeleri
+                if (model.PaymentStatus == PaymentStatus.Paid)
+                {
+                    invoice.PaymentStatus = PaymentStatus.Paid; 
+                }
+                else if (DateTime.Now > model.PaymentDue)
+                {
+                    invoice.PaymentStatus = PaymentStatus.Draft; 
+                }
+                else
+                {
+                    invoice.PaymentStatus = PaymentStatus.Pending; 
+                }
 
+                // Item'ları güncelleme
+                invoice.Items.Clear();
                 invoice.Items = model.Items.Select(x => new Item
                 {
                     Name = x.Name,
@@ -167,12 +180,14 @@ namespace InvoiceApp.Controllers
                     Price = x.Price,
                     Total = x.Price * x.Quantity,
                 }).ToList();
+
                 _context.Invoices.Update(invoice);
                 _context.SaveChanges();
 
                 return Ok(new { message = "Fatura başarıyla güncellendi." });
             }
         }
+
 
         [HttpDelete("{id}")]
         public IActionResult DeleteInvoice(int id)
