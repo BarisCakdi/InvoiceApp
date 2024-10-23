@@ -43,13 +43,13 @@ public class Invoice
     public Double TotalAmount { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
     
-    
-
+  
 
     // Bir faturanın birden fazla Item'ı olabilir
      
     
      public int ClientId { get; set; }
     public Client? Client { get; set; }
+    
     
 }

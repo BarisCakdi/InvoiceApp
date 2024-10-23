@@ -100,9 +100,7 @@ namespace InvoiceApp.Controllers
 
             return Ok(userWithInvoices);
         }
-
         
-
 
         [HttpDelete("{id}")]
         public string DeleteClient(int id)
@@ -121,5 +119,7 @@ namespace InvoiceApp.Controllers
             }
         }
     }
+    
+    
 
 }

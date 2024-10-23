@@ -19,9 +19,11 @@ namespace InvoiceApp.Controllers
         }
 
         [HttpGet("/Invoices")]
-        public IActionResult GetInvoice()
+        public IActionResult GetInvoice(int page = 1, int pageSize = 10)
         {
             var invoices = _context.Invoices
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Include(x => x.Client)
                 .Include(x => x.Items)
                 .ToList();
@@ -43,6 +45,7 @@ namespace InvoiceApp.Controllers
                     City = invoice.Client.City,
                     Country = invoice.Client.Country,
                 },
+                
                 Items = invoice.Items.Select(item => new Item
                 {
                     Id = item.Id,
@@ -119,7 +122,7 @@ namespace InvoiceApp.Controllers
                     CreatedTime = model.CreatedTime,
                     PaymentStatus = model.PaymentStatus,
                     Description = model.Description,
-                    ClientId = model.ClientId,
+                    // ClientId = model.ClientId,
                     PaymentDue = CalculatePaymentDue(model.CreatedTime, model.PaymentTerm),
                     Items = model.Items.Select(x => new Item
                     {
@@ -148,8 +151,9 @@ namespace InvoiceApp.Controllers
 
                 invoice.CreatedTime = model.CreatedTime;
                 invoice.PaymentStatus = model.PaymentStatus;
-                invoice.ClientId = model.ClientId;
-                invoice.PaymentDue = CalculatePaymentDue(model.CreatedTime, model.PaymentTerm);
+                invoice.Description = model.Description;
+                // invoice.ClientId = model.ClientId;
+                invoice.PaymentDue = model.PaymentDue;
 
                 invoice.Items.Clear();
 
@@ -269,6 +273,7 @@ namespace InvoiceApp.Controllers
                 return createdTime.AddDays(30);
             }
         }
+        
 
 
 
