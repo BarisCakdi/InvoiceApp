@@ -20,11 +20,6 @@ namespace InvoiceApp.Controllers
         {
             _context = context;
         }
-        
-        
-        
-        
-        //denemecanlı3
 
         [HttpGet("/Invoices")]
         public IActionResult GetInvoice(int page = 1, int pageSize = 10)
@@ -131,8 +126,7 @@ namespace InvoiceApp.Controllers
                     PaymentStatus = PaymentStatus.Pending,
                     Description = model.Description,
                     ClientId = model.ClientId,
-                    PaymentDue = CalculatePaymentDue(model.CreatedTime, model.PaymentTerm), 
-                    
+                    PaymentDue = CalculatePaymentDue(model.CreatedTime, model.PaymentTerm),
                     Items = model.Items.Select(x => new Item
                     {
                         Name = x.Name,
@@ -141,10 +135,60 @@ namespace InvoiceApp.Controllers
                         Total = x.Price * x.Quantity,
                     }).ToList()
                 };
+
                 _context.Invoices.Add(invoice);
                 _context.SaveChanges();
 
-                return Ok(new { message = "Fatura başarıyla kaydedildi." });
+                // Kullanıcı bilgilerini ve faturayı aldıktan sonra mail hazırlama
+                var client = _context.Clients.FirstOrDefault(x => x.Id == model.ClientId);
+                if (client == null)
+                {
+                    return NotFound("Kullanıcı bulunamadı.");
+                }
+
+                // E-posta içeriği (fatura detayları)
+                var invoiceDetails = $@"
+            <h1>Fatura Detayları</h1>
+            <p><strong>Fatura Adı:</strong> {invoice.InvoiceName}</p>
+            <p><strong>Fatura Tarihi:</strong> {invoice.CreatedTime.ToShortDateString()}</p>
+            <p><strong>Ödeme Durumu:</strong> {invoice.PaymentStatus}</p>
+            <p><strong>Son Ödeme Tarihi:</strong> {invoice.PaymentDue.ToShortDateString()}</p>
+            <p><strong>Açıklama:</strong> {invoice.Description}</p>
+            <h2>Ürünler</h2>
+            <ul>
+        ";
+
+                // Faturadaki ürünleri liste olarak ekle
+                foreach (var item in invoice.Items)
+                {
+                    invoiceDetails += $@"
+                <li>
+                    {item.Name} - {item.Quantity} x {item.Price:C} = {item.Total:C}
+                </li>";
+                }
+
+                invoiceDetails += "</ul>";
+
+                // SMTP ve mail hazırlığı
+                var smtpClient = new SmtpClient("smtp.eu.mailgun.org", 587)
+                {
+                    Credentials = new NetworkCredential("postmaster@bildirim.bariscakdi.com.tr", "8eac27c024c6133c1ee30867d050a18f-a26b1841-8a6f61d9"),
+                    EnableSsl = true
+                };
+
+                var mailMessage = new MailMessage()
+                {
+                    From = new MailAddress("postmaster@bildirim.bariscakdi.com.tr", "Invoice App"),
+                    Subject = "Yeni Fatura Bilgileri",
+                    Body = invoiceDetails, // E-posta içeriği (HTML)
+                    IsBodyHtml = true
+                };
+
+                mailMessage.To.Add(new MailAddress(client.Email, client.Name));
+
+                smtpClient.Send(mailMessage);
+
+                return Ok(new { message = "Fatura başarıyla kaydedildi ve mail gönderildi." });
             }
             else
             {
@@ -157,26 +201,122 @@ namespace InvoiceApp.Controllers
                     return NotFound("Fatura bulunamadı.");
                 }
 
+                // Fatura güncellemeleri (daha önceki kod)
                 invoice.CreatedTime = model.CreatedTime;
                 invoice.Description = model.Description;
-                // invoice.ClientId = model.ClientId;
                 invoice.PaymentDue = model.PaymentDue;
 
-                // Ödeme durumu güncellemeleri
                 if (model.PaymentStatus == PaymentStatus.Paid)
                 {
-                    invoice.PaymentStatus = PaymentStatus.Paid; 
+                    invoice.PaymentStatus = PaymentStatus.Paid;
+                    var client = _context.Clients.FirstOrDefault(x => x.Id == model.ClientId);
+                    if (client == null)
+                    {
+                        return NotFound("Kullanıcı bulunamadı.");
+                    }
+
+                    // E-posta içeriği (fatura detayları)
+                    var invoiceDetails = $@"
+            <h1>Fatura Detayları</h1>
+            <p><strong>Fatura Adı:</strong> {invoice.InvoiceName}</p>
+            <p><strong>Fatura Tarihi:</strong> {invoice.CreatedTime.ToShortDateString()}</p>
+            <p><strong>Ödeme Durumu:</strong> {invoice.PaymentStatus}</p>
+            <p><strong>Son Ödeme Tarihi:</strong> {invoice.PaymentDue.ToShortDateString()}</p>
+            <p><strong>Açıklama:</strong> {invoice.Description}</p>
+            <h2>Ürünler</h2>
+            <ul>
+        ";
+
+                    // Faturadaki ürünleri liste olarak ekle
+                    foreach (var item in invoice.Items)
+                    {
+                        invoiceDetails += $@"
+                <li>
+                    {item.Name} - {item.Quantity} x {item.Price:C} = {item.Total:C}
+                </li>";
+                    }
+
+                    invoiceDetails += "</ul>";
+
+                    // SMTP ve mail hazırlığı
+                    var smtpClient = new SmtpClient("smtp.eu.mailgun.org", 587)
+                    {
+                        Credentials = new NetworkCredential("postmaster@bildirim.bariscakdi.com.tr", "8eac27c024c6133c1ee30867d050a18f-a26b1841-8a6f61d9"),
+                        EnableSsl = true
+                    };
+
+                    var mailMessage = new MailMessage()
+                    {
+                        From = new MailAddress("postmaster@bildirim.bariscakdi.com.tr", "Invoice App"),
+                        Subject = "Yeni Fatura Bilgileri",
+                        Body = invoiceDetails, // E-posta içeriği (HTML)
+                        IsBodyHtml = true
+                    };
+
+                    mailMessage.To.Add(new MailAddress(client.Email, client.Name));
+
+                    smtpClient.Send(mailMessage);
+
+                    return Ok(new { message = "Fatura başarıyla ödeme alındı ve mail gönderildi." });
                 }
                 else if (DateTime.Now > model.PaymentDue)
                 {
-                    invoice.PaymentStatus = PaymentStatus.Draft; 
+                    invoice.PaymentStatus = PaymentStatus.Draft;
+                    var client = _context.Clients.FirstOrDefault(x => x.Id == model.ClientId);
+                    if (client == null)
+                    {
+                        return NotFound("Kullanıcı bulunamadı.");
+                    }
+
+                    // E-posta içeriği (fatura detayları)
+                    var invoiceDetails = $@"
+            <h1>Fatura Detayları</h1>
+            <p><strong>Fatura Adı:</strong> {invoice.InvoiceName}</p>
+            <p><strong>Fatura Tarihi:</strong> {invoice.CreatedTime.ToShortDateString()}</p>
+            <p><strong>Ödeme Durumu:</strong> {invoice.PaymentStatus}</p>
+            <p><strong>Son Ödeme Tarihi:</strong> {invoice.PaymentDue.ToShortDateString()}</p>
+            <p><strong>Açıklama:</strong> {invoice.Description}</p>
+            <h2>Ürünler</h2>
+            <ul>
+        ";
+
+                    // Faturadaki ürünleri liste olarak ekle
+                    foreach (var item in invoice.Items)
+                    {
+                        invoiceDetails += $@"
+                <li>
+                    {item.Name} - {item.Quantity} x {item.Price:C} = {item.Total:C}
+                </li>";
+                    }
+
+                    invoiceDetails += "</ul>";
+
+                    // SMTP ve mail hazırlığı
+                    var smtpClient = new SmtpClient("smtp.eu.mailgun.org", 587)
+                    {
+                        Credentials = new NetworkCredential("postmaster@bildirim.bariscakdi.com.tr", "8eac27c024c6133c1ee30867d050a18f-a26b1841-8a6f61d9"),
+                        EnableSsl = true
+                    };
+
+                    var mailMessage = new MailMessage()
+                    {
+                        From = new MailAddress("postmaster@bildirim.bariscakdi.com.tr", "Invoice App"),
+                        Subject = "Yeni Fatura Bilgileri",
+                        Body = invoiceDetails, // E-posta içeriği (HTML)
+                        IsBodyHtml = true
+                    };
+
+                    mailMessage.To.Add(new MailAddress(client.Email, client.Name));
+
+                    smtpClient.Send(mailMessage);
+
+                    return Ok(new { message = "Fatura ödemeniz alınamadı askıya alındı ve mail gönderildi." });
                 }
                 else
                 {
-                    invoice.PaymentStatus = PaymentStatus.Pending; 
+                    invoice.PaymentStatus = PaymentStatus.Pending;
                 }
 
-                // Item'ları güncelleme
                 invoice.Items.Clear();
                 invoice.Items = model.Items.Select(x => new Item
                 {
@@ -192,6 +332,7 @@ namespace InvoiceApp.Controllers
                 return Ok(new { message = "Fatura başarıyla güncellendi." });
             }
         }
+
 
 
         [HttpDelete("{id}")]

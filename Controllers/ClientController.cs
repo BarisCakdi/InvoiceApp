@@ -67,7 +67,7 @@ namespace InvoiceApp.Controllers
         
 
         [HttpGet("{id}")]
-        public IActionResult GetUserById(int id)
+        public IActionResult GetClientById(int id)
         {
             var user = _context.Clients
                 .Include(u => u.Invoices)!     // Kullanıcının faturalarını içeri aktar
