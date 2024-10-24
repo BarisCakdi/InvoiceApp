@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InvoiceApp.Controllers
 {
-
     [ApiController]
     [Route("api/[controller]/[action]")]
     public class InvoiceController : ControllerBase
@@ -48,7 +47,7 @@ namespace InvoiceApp.Controllers
                     City = invoice.Client.City,
                     Country = invoice.Client.Country,
                 },
-                
+
                 Items = invoice.Items.Select(item => new Item
                 {
                     Id = item.Id,
@@ -75,7 +74,7 @@ namespace InvoiceApp.Controllers
             {
                 return NotFound("Fatura bulunamadı.");
             }
-            
+
             //deneme
 
             var invoiceDetail = new Invoice
@@ -139,14 +138,14 @@ namespace InvoiceApp.Controllers
                 _context.Invoices.Add(invoice);
                 _context.SaveChanges();
 
-                // Kullanıcı bilgilerini ve faturayı aldıktan sonra mail hazırlama
+
                 var client = _context.Clients.FirstOrDefault(x => x.Id == model.ClientId);
                 if (client == null)
                 {
                     return NotFound("Kullanıcı bulunamadı.");
                 }
 
-                // E-posta içeriği (fatura detayları)
+
                 var invoiceDetails = $@"
             <h1>Fatura Detayları</h1>
             <p><strong>Fatura Adı:</strong> {invoice.InvoiceName}</p>
@@ -158,7 +157,7 @@ namespace InvoiceApp.Controllers
             <ul>
         ";
 
-                // Faturadaki ürünleri liste olarak ekle
+
                 foreach (var item in invoice.Items)
                 {
                     invoiceDetails += $@"
@@ -169,10 +168,11 @@ namespace InvoiceApp.Controllers
 
                 invoiceDetails += "</ul>";
 
-                // SMTP ve mail hazırlığı
+
                 var smtpClient = new SmtpClient("smtp.eu.mailgun.org", 587)
                 {
-                    Credentials = new NetworkCredential("postmaster@bildirim.bariscakdi.com.tr", "8eac27c024c6133c1ee30867d050a18f-a26b1841-8a6f61d9"),
+                    Credentials = new NetworkCredential("postmaster@bildirim.bariscakdi.com.tr",
+                        "8eac27c024c6133c1ee30867d050a18f-a26b1841-8a6f61d9"),
                     EnableSsl = true
                 };
 
@@ -180,7 +180,7 @@ namespace InvoiceApp.Controllers
                 {
                     From = new MailAddress("postmaster@bildirim.bariscakdi.com.tr", "Invoice App"),
                     Subject = "Yeni Fatura Bilgileri",
-                    Body = invoiceDetails, // E-posta içeriği (HTML)
+                    Body = invoiceDetails,
                     IsBodyHtml = true
                 };
 
@@ -217,23 +217,23 @@ namespace InvoiceApp.Controllers
 
                     // E-posta içeriği (fatura detayları)
                     var invoiceDetails = $@"
-            <h1>Fatura Detayları</h1>
-            <p><strong>Fatura Adı:</strong> {invoice.InvoiceName}</p>
-            <p><strong>Fatura Tarihi:</strong> {invoice.CreatedTime.ToShortDateString()}</p>
-            <p><strong>Ödeme Durumu:</strong> {invoice.PaymentStatus}</p>
-            <p><strong>Son Ödeme Tarihi:</strong> {invoice.PaymentDue.ToShortDateString()}</p>
-            <p><strong>Açıklama:</strong> {invoice.Description}</p>
-            <h2>Ürünler</h2>
-            <ul>
-        ";
+                     <h1>Fatura Detayları</h1>
+                     <p><strong>Fatura Adı:</strong> {invoice.InvoiceName}</p>
+                     <p><strong>Fatura Tarihi:</strong> {invoice.CreatedTime.ToShortDateString()}</p>
+                     <p><strong>Ödeme Durumu:</strong> {invoice.PaymentStatus}</p>
+                     <p><strong>Son Ödeme Tarihi:</strong> {invoice.PaymentDue.ToShortDateString()}</p>
+                     <p><strong>Açıklama:</strong> {invoice.Description}</p>
+                      <h2>Ürünler</h2>
+                     <ul>
+                      ";
 
                     // Faturadaki ürünleri liste olarak ekle
                     foreach (var item in invoice.Items)
                     {
                         invoiceDetails += $@"
-                <li>
-                    {item.Name} - {item.Quantity} x {item.Price:C} = {item.Total:C}
-                </li>";
+                       <li>
+                         {item.Name} - {item.Quantity} x {item.Price:C} = {item.Total:C}
+                      </li>";
                     }
 
                     invoiceDetails += "</ul>";
@@ -241,7 +241,8 @@ namespace InvoiceApp.Controllers
                     // SMTP ve mail hazırlığı
                     var smtpClient = new SmtpClient("smtp.eu.mailgun.org", 587)
                     {
-                        Credentials = new NetworkCredential("postmaster@bildirim.bariscakdi.com.tr", "8eac27c024c6133c1ee30867d050a18f-a26b1841-8a6f61d9"),
+                        Credentials = new NetworkCredential("postmaster@bildirim.bariscakdi.com.tr",
+                            "8eac27c024c6133c1ee30867d050a18f-a26b1841-8a6f61d9"),
                         EnableSsl = true
                     };
 
@@ -270,23 +271,23 @@ namespace InvoiceApp.Controllers
 
                     // E-posta içeriği (fatura detayları)
                     var invoiceDetails = $@"
-            <h1>Fatura Detayları</h1>
-            <p><strong>Fatura Adı:</strong> {invoice.InvoiceName}</p>
-            <p><strong>Fatura Tarihi:</strong> {invoice.CreatedTime.ToShortDateString()}</p>
-            <p><strong>Ödeme Durumu:</strong> {invoice.PaymentStatus}</p>
-            <p><strong>Son Ödeme Tarihi:</strong> {invoice.PaymentDue.ToShortDateString()}</p>
-            <p><strong>Açıklama:</strong> {invoice.Description}</p>
-            <h2>Ürünler</h2>
-            <ul>
-        ";
+                        <h1>Fatura Detayları</h1>
+                        <p><strong>Fatura Adı:</strong> {invoice.InvoiceName}</p>
+                        <p><strong>Fatura Tarihi:</strong> {invoice.CreatedTime.ToShortDateString()}</p>
+                        <p><strong>Ödeme Durumu:</strong> {invoice.PaymentStatus}</p>
+                        <p><strong>Son Ödeme Tarihi:</strong> {invoice.PaymentDue.ToShortDateString()}</p>
+                        <p><strong>Açıklama:</strong> {invoice.Description}</p>
+                        <h2>Ürünler</h2>
+                        <ul>
+                         ";
 
                     // Faturadaki ürünleri liste olarak ekle
                     foreach (var item in invoice.Items)
                     {
                         invoiceDetails += $@"
-                <li>
-                    {item.Name} - {item.Quantity} x {item.Price:C} = {item.Total:C}
-                </li>";
+                     <li>
+                       {item.Name} - {item.Quantity} x {item.Price:C} = {item.Total:C}
+                    </li>";
                     }
 
                     invoiceDetails += "</ul>";
@@ -294,7 +295,8 @@ namespace InvoiceApp.Controllers
                     // SMTP ve mail hazırlığı
                     var smtpClient = new SmtpClient("smtp.eu.mailgun.org", 587)
                     {
-                        Credentials = new NetworkCredential("postmaster@bildirim.bariscakdi.com.tr", "8eac27c024c6133c1ee30867d050a18f-a26b1841-8a6f61d9"),
+                        Credentials = new NetworkCredential("postmaster@bildirim.bariscakdi.com.tr",
+                            "8eac27c024c6133c1ee30867d050a18f-a26b1841-8a6f61d9"),
                         EnableSsl = true
                     };
 
@@ -332,7 +334,6 @@ namespace InvoiceApp.Controllers
                 return Ok(new { message = "Fatura başarıyla güncellendi." });
             }
         }
-
 
 
         [HttpDelete("{id}")]
@@ -407,12 +408,10 @@ namespace InvoiceApp.Controllers
                 int numberAgain = random.Next(1000, 9999);
 
                 return $"{firstLetter}{secondLetter}{number}";
-
             }
             else
             {
                 return $"{firstLetter}{secondLetter}{number}";
-
             }
         }
 
@@ -426,7 +425,6 @@ namespace InvoiceApp.Controllers
             else if (paymentTerm == PaymentTerm.Sonraki7Gün)
             {
                 return createdTime.AddDays(7);
-
             }
             else if (paymentTerm == PaymentTerm.Sonraki14Gün)
             {
@@ -437,11 +435,5 @@ namespace InvoiceApp.Controllers
                 return createdTime.AddDays(30);
             }
         }
-        
-
-
-
-
-
     }
 }
