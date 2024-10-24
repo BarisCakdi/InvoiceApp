@@ -3,6 +3,8 @@ using InvoiceApp.DTOs;
 using InvoiceApp.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using InvoiceApp.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mail;
@@ -58,6 +60,7 @@ namespace InvoiceApp.Controllers
                 data.Country = model.Country;
                 
                 _context.Clients.Add(data);
+                
             }
 
             _context.SaveChanges();

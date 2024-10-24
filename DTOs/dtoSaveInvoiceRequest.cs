@@ -16,6 +16,7 @@ public class dtoSaveInvoiceRequest
     public DateTime CreatedTime { get; set; }
     public ICollection<dtoSaveItemRequest> Items { get; set; } 
 
+    
     public PaymentStatus PaymentStatus { get; set; }
   
     public PaymentTerm PaymentTerm { get; set; }

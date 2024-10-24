@@ -37,19 +37,20 @@ public class Invoice
 
     public DateTime CreatedTime { get; set; }
     
+
     public ICollection<Item> Items { get; set; }
+    
     public DateTime PaymentDue { get; set; }
 
     public Double TotalAmount { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
     
-  
-
     // Bir faturanın birden fazla Item'ı olabilir
-     
     
      public int ClientId { get; set; }
     public Client? Client { get; set; }
+    
+    
     
     
 }
