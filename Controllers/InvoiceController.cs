@@ -207,7 +207,7 @@ namespace InvoiceApp.Controllers
         //
         //         smtpClient.Send(mailMessage);
 
-                return Ok(new { message = "Fatura başarıyla kaydedildi ve mail gönderildi." });
+                return Ok(new { message = "Fatura başarıyla kaydedildi." });
             }
             else
             {
@@ -277,7 +277,7 @@ namespace InvoiceApp.Controllers
                     //
                     // smtpClient.Send(mailMessage);
 
-                    return Ok(new { message = "Fatura başarıyla ödeme alındı ve mail gönderildi." });
+                    return Ok(new { message = "Fatura başarıyla ödeme alındı." });
                 }
                 else if (DateTime.Now > model.PaymentDue)
                 {
@@ -331,7 +331,7 @@ namespace InvoiceApp.Controllers
                     //
                     // smtpClient.Send(mailMessage);
 
-                    return Ok(new { message = "Fatura ödemeniz alınamadı askıya alındı ve mail gönderildi." });
+                    return Ok(new { message = "Fatura ödemeniz alınamadı." });
                 }
                 else
                 {
