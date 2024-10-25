@@ -40,6 +40,7 @@ public class Invoice
 
     public ICollection<Item> Items { get; set; }
     
+    
     public DateTime PaymentDue { get; set; }
 
     public Double TotalAmount { get; set; }
@@ -49,8 +50,4 @@ public class Invoice
     
      public int ClientId { get; set; }
     public Client? Client { get; set; }
-    
-    
-    
-    
 }

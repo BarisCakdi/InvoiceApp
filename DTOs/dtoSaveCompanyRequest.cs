@@ -1,3 +1,5 @@
+using InvoiceApp.Model;
+
 namespace InvoiceApp.DTOs;
 
 public class dtoSaveCompanyRequest
@@ -9,4 +11,7 @@ public class dtoSaveCompanyRequest
     public int CompanyPostCode { get; set; }
         
     public string CompanyCountry { get; set; }
+   
+    
+    
 }

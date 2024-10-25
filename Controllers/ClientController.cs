@@ -65,7 +65,7 @@ namespace InvoiceApp.Controllers
 
             _context.SaveChanges();
 
-            return Ok("Müşteri Başarıyla eklendi.");
+            return Ok($"Müşteri Başarıyla eklendi.{data.Id}");
         }
         
 

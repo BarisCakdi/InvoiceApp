@@ -2,6 +2,7 @@ using InvoiceApp.Data;
 using InvoiceApp.DTOs;
 using InvoiceApp.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace InvoiceApp.Controllers;
 
@@ -17,36 +18,47 @@ public class CompanyController : ControllerBase
     }
     //denemecanlı2
     [HttpGet]
-    public IActionResult GetCompanys()
+    public IActionResult GetCompany()
     {
-        var company = _context.Companys.ToList();
-        return Ok(company);  
+        var users = _context.Companys.ToList();
+        return Ok(users);  
     }
-    
-    [HttpPost]
-    public OkObjectResult SaveCompany([FromBody] dtoSaveCompanyRequest model)
+
+    [HttpPost("/SaveCompany")]
+    public IActionResult SaveCompany(dtoSaveCompanyRequest model)
     {
-        var data = new Company(); 
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new { message = "Eksik veya hatalı giriş yaptınız." });
+        }
+        var data = new Company();
+
         if (model.Id is not 0)
         {
+            
             data = _context.Companys.Find(model.Id);
-            data.CompanyCountry = model.CompanyCountry;
             data.CompanyAddress = model.CompanyAddress;
+            data.CompanyCountry = model.CompanyCountry;
             data.CompanyPostCode = model.CompanyPostCode;
             _context.Companys.Update(data);
-           
         }
         else
-        { 
-            data.CompanyCountry = model.CompanyCountry;
+        {
             data.CompanyAddress = model.CompanyAddress;
+            data.CompanyCountry = model.CompanyCountry;
             data.CompanyPostCode = model.CompanyPostCode;
+            
+                
             _context.Companys.Add(data);
+                
         }
+
         _context.SaveChanges();
-        return Ok("Company saved");
+
+        return Ok("Şirket Başarıyla eklendi.");
     }
     
+
     [HttpDelete("{id}")]
     public string DeleteCompany(int id)
     {

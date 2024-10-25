@@ -9,6 +9,5 @@ public class Company
     public int CompanyPostCode { get; set; }
         
     public string CompanyCountry { get; set; }
-    
   
 }
